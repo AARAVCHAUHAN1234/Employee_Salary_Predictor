@@ -7,11 +7,11 @@ MODEL_PATH = Path(__file__).parent / "salary_predictor.pkl"
 
 st.set_page_config(page_title="Employee Salary Predictor", layout="centered")
 
-# Headline figures taken from this app itself: (label, target, suffix, duration in seconds)
+# Headline figures from the training notebook: (label, target, suffix, duration in seconds)
 STATS = [
+    ("Employee records", 5020, "", 2.8),
     ("Model features", 28, "", 1.6),
-    ("Input fields", 14, "", 2.2),
-    ("Cities covered", 4, "", 2.8),
+    ("R2 score", 81, "%", 2.2),  # Linear Regression R2 = 0.8098
 ]
 
 CSS = """
@@ -78,7 +78,7 @@ with st.form("salary_form"):
     col1, col2 = st.columns(2)
 
     with col1:
-        age = st.number_input("Age", min_value=18, max_value=70, value=30, step=1)
+        age = st.number_input("Age", min_value=21, max_value=60, value=30, step=1)
         gender = st.selectbox("Gender", ["Male", "Female"])
         experience = st.number_input("Experience (years)", min_value=0.0, max_value=50.0, value=5.0, step=0.5)
         education = st.selectbox("Education", ["Diploma", "Bachelor", "Master", "PhD"])
