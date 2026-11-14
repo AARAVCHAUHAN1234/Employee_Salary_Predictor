@@ -9,9 +9,9 @@ st.set_page_config(page_title="Employee Salary Predictor", layout="centered")
 
 # Headline figures from the training notebook: (label, target, suffix, duration in seconds)
 STATS = [
-    ("Employee records", 5020, "", 2.8),
     ("Model features", 28, "", 1.6),
-    ("R2 score", 81, "%", 2.2),  # Linear Regression R2 = 0.8098
+    ("Input fields", 14, "", 2.2),
+    ("Cities covered", 4, "", 2.8),
 ]
 
 CSS = """
