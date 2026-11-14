@@ -5,80 +5,64 @@ from pathlib import Path
 
 MODEL_PATH = Path(__file__).parent / "salary_predictor.pkl"
 
-st.set_page_config(page_title="Employee Salary Predictor", page_icon="💼", layout="centered")
+st.set_page_config(page_title="Employee Salary Predictor", layout="centered")
 
+# Headline figures taken from this app itself: (label, target, suffix, duration in seconds)
 STATS = [
-    ("Input features", 28, "+", 1.6),
-    ("Cities covered", 4, "", 2.2),
-    ("Model accuracy (R²)", 92, "%", 2.8),  # placeholder: put your real score here
+    ("Model features", 28, "", 1.6),
+    ("Input fields", 14, "", 2.2),
+    ("Cities covered", 4, "", 2.8),
 ]
 
 CSS = """
 <style>
 @property --num { syntax: "<integer>"; initial-value: 0; inherits: true; }
-
 @keyframes count-up { from { --num: 0; } to { --num: var(--target); } }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-.block-container { padding-top: 2rem; max-width: 820px; }
+.block-container { max-width: 800px; padding-top: 2.5rem; }
 
-.hero {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #db2777 100%);
-  color: #fff; border-radius: 20px; padding: 2rem 1.8rem; margin-bottom: 1.2rem;
-  box-shadow: 0 12px 30px rgba(79,70,229,.30); animation: rise .6s ease both;
-}
-.hero h1 { margin: 0 0 .3rem; font-size: 2rem; color: #fff; }
-.hero p  { margin: 0; opacity: .9; }
+.hero { padding: 0 0 1.4rem; border-bottom: 1px solid rgba(127,127,127,.35); margin-bottom: 1.6rem; animation: fade .6s ease both; }
+.eyebrow { font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; opacity: .6; margin-bottom: .6rem; }
+.hero h1 { font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 2.3rem; letter-spacing: -.01em; margin: 0 0 .5rem; padding: 0; }
+.hero p { margin: 0; opacity: .75; max-width: 34rem; }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin-bottom: 1.4rem; }
-.stat {
-  background: rgba(127,127,127,.10); border: 1px solid rgba(127,127,127,.25);
-  border-radius: 16px; padding: 1rem .6rem; text-align: center;
-  animation: count-up var(--dur) ease-out forwards, rise .6s ease both;
-}
-.stat-value { counter-reset: num var(--num); font-size: 2.1rem; font-weight: 800; color: #7c3aed; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-bottom: 1.8rem; border-top: 1px solid rgba(127,127,127,.35); border-bottom: 1px solid rgba(127,127,127,.35); }
+.stat { padding: 1.1rem .5rem; text-align: center; border-right: 1px solid rgba(127,127,127,.35); animation: count-up var(--dur) ease-out forwards; }
+.stat:last-child { border-right: 0; }
+.stat-value { counter-reset: num var(--num); font-family: Georgia, 'Times New Roman', serif; font-size: 2.3rem; font-weight: 400; line-height: 1.1; }
 .stat-value::before { content: counter(num); }
-.stat-value::after  { content: var(--suffix); }
-.stat-label { font-size: .8rem; opacity: .75; margin-top: .2rem; }
+.stat-value::after { content: var(--suffix); }
+.stat-label { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; opacity: .6; margin-top: .35rem; }
 
-.result {
-  background: linear-gradient(135deg, #059669, #10b981); color: #fff; text-align: center;
-  border-radius: 20px; padding: 1.6rem 1rem; margin-top: 1rem;
-  box-shadow: 0 10px 26px rgba(16,185,129,.30); animation: rise .5s ease both;
-}
-.result .label { opacity: .9; font-size: .95rem; }
-.result .amount { font-size: 3rem; font-weight: 800; line-height: 1.1; }
-.result .whole {
-  --target: 0; animation: count-up 1.4s ease-out forwards;
-  counter-reset: num var(--num);
-}
+div[data-testid="stForm"] { border: 1px solid rgba(127,127,127,.35); border-radius: 6px; padding: 1.4rem 1.4rem .8rem; }
+div[data-testid="stFormSubmitButton"] button { background: #1f2a44; color: #fff; border: 0; border-radius: 4px; font-weight: 500; letter-spacing: .06em; padding: .65rem 0; transition: background .2s; }
+div[data-testid="stFormSubmitButton"] button:hover { background: #33415f; color: #fff; }
+
+.result { margin-top: 1.4rem; padding: 1.6rem 1rem; text-align: center; border: 1px solid rgba(127,127,127,.35); border-left: 4px solid #1f2a44; border-radius: 4px; animation: fade .5s ease both; }
+.result .label { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; opacity: .6; }
+.result .amount { font-family: Georgia, 'Times New Roman', serif; font-size: 2.8rem; line-height: 1.2; margin-top: .3rem; }
+.result .whole { animation: count-up 1.4s ease-out forwards; counter-reset: num var(--num); }
 .result .whole::before { content: counter(num); }
-
-div[data-testid="stForm"] {
-  border: 1px solid rgba(127,127,127,.25); border-radius: 18px; padding: 1.2rem 1.2rem .6rem;
-}
-.stFormSubmitButton button, div[data-testid="stFormSubmitButton"] button {
-  background: linear-gradient(90deg, #4f46e5, #db2777); color: #fff; border: 0;
-  border-radius: 12px; font-weight: 700; padding: .65rem 0; transition: transform .15s, box-shadow .15s;
-}
-div[data-testid="stFormSubmitButton"] button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124,58,237,.4); color:#fff; }
-@media (max-width: 600px) { .stats { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .stats { grid-template-columns: 1fr; } .stat { border-right: 0; border-bottom: 1px solid rgba(127,127,127,.35); } .stat:last-child { border-bottom: 0; } }
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
 
-# show_spinner=False removes the "Running load_model()" message.
-@st.cache_resource(show_spinner=False)
+
+@st.cache_resource(show_spinner=False)  # no "Running load_model()" message
 def load_model():
     return joblib.load(MODEL_PATH)
+
 
 if not MODEL_PATH.exists():
     st.error("Model file not found. Put salary_predictor.pkl in the same folder as app.py.")
     st.stop()
-model = load_model()  # loaded once, silently, before the form is used
+model = load_model()
 
 st.markdown(
-    '<div class="hero"><h1>💼 Employee Salary Predictor</h1>'
+    '<div class="hero"><div class="eyebrow">Compensation Estimator</div>'
+    "<h1>Employee Salary Prediction</h1>"
     "<p>Enter employee details to estimate the annual salary.</p></div>",
     unsafe_allow_html=True,
 )
@@ -91,31 +75,27 @@ stats_html = "".join(
 st.markdown(f'<div class="stats">{stats_html}</div>', unsafe_allow_html=True)
 
 with st.form("salary_form"):
-    st.subheader("👤 Personal & Role")
-    c1, c2 = st.columns(2)
-    with c1:
-        age = st.number_input("Age", 18, 70, 30, 1)
+    col1, col2 = st.columns(2)
+
+    with col1:
+        age = st.number_input("Age", min_value=18, max_value=70, value=30, step=1)
         gender = st.selectbox("Gender", ["Male", "Female"])
+        experience = st.number_input("Experience (years)", min_value=0.0, max_value=50.0, value=5.0, step=0.5)
         education = st.selectbox("Education", ["Diploma", "Bachelor", "Master", "PhD"])
-        city = st.selectbox("City", ["Chennai", "Delhi", "Hyderabad", "Mumbai"])
-    with c2:
         department = st.selectbox("Department", ["Operations", "Marketing", "Sales", "IT", "HR"])
         job_level = st.selectbox("Job Level", ["Junior", "Lead", "Mid", "Senior", "Manager"])
+
+    with col2:
+        performance = st.slider("Performance Rating", min_value=1, max_value=5, value=3)
+        certifications = st.number_input("Certifications", min_value=0, max_value=50, value=2, step=1)
+        overtime = st.number_input("Overtime Hours", min_value=0.0, max_value=300.0, value=10.0, step=1.0)
         remote_work = st.selectbox("Remote Work", ["No", "Yes"])
-        performance = st.slider("Performance Rating", 1, 5, 3)
+        city = st.selectbox("City", ["Chennai", "Delhi", "Hyderabad", "Mumbai"])
+        tenure = st.number_input("Company Tenure (years)", min_value=0.0, max_value=50.0, value=3.0, step=0.5)
+        projects = st.number_input("Projects Completed", min_value=0, max_value=200, value=5, step=1)
+        skill_score = st.number_input("Skill Score", min_value=0.0, max_value=100.0, value=70.0, step=1.0)
 
-    st.subheader("📈 Experience & Output")
-    c3, c4 = st.columns(2)
-    with c3:
-        experience = st.number_input("Experience (years)", 0.0, 50.0, 5.0, 0.5)
-        tenure = st.number_input("Company Tenure (years)", 0.0, 50.0, 3.0, 0.5)
-        certifications = st.number_input("Certifications", 0, 50, 2, 1)
-    with c4:
-        projects = st.number_input("Projects Completed", 0, 200, 5, 1)
-        overtime = st.number_input("Overtime Hours", 0.0, 300.0, 10.0, 1.0)
-        skill_score = st.number_input("Skill Score", 0.0, 100.0, 70.0, 1.0)
-
-    submitted = st.form_submit_button("✨ Predict Annual Salary", use_container_width=True)
+    submitted = st.form_submit_button("Predict Annual Salary", use_container_width=True)
 
 if submitted:
     # Keep these columns and their order identical to the training notebook's X dataframe.
@@ -154,7 +134,7 @@ if submitted:
     try:
         prediction = float(model.predict(input_df)[0])
         whole, frac = divmod(round(prediction, 2), 1)
-        frac_txt = f"{frac:.2f}"[1:]  # ".xx"
+        frac_txt = f"{frac:.2f}"[1:]
         st.markdown(
             f'<div class="result"><div class="label">Predicted Annual Salary</div>'
             f'<div class="amount"><span class="whole" style="--target:{int(whole)}"></span>'
